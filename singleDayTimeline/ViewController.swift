@@ -18,11 +18,10 @@ class ViewController: UIViewController, UICollectionViewDataSource,UICollectionV
         super.viewDidLoad()
         daysCollectionView.register(UINib.init(nibName: "DayCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: cellIdentifier)
        
-        let allDates = Helper.generateRandomDate(daysBack: 900, numberOf: 3)
+        let allDates = Helper.generateRandomDate(daysBack: 900, numberOf: 10)
         self.dates = allDates.sorted(by: {
             $0!.compare($1!) == .orderedAscending
         })
-        print(self.dates)
         startDate = self.dates.first! ?? Date()
         
         daysCollectionView.delegate = self
@@ -70,8 +69,12 @@ class ViewController: UIViewController, UICollectionViewDataSource,UICollectionV
         let randomDate = self.dates[randomIndex]
         let daysFrom = randomDate?.days(from: self.startDate!)
         let indexPath = IndexPath(row: daysFrom!, section: 0)
-        let cell = daysCollectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath) as! DayCollectionViewCell
-        cell.isSelected = true
+//        if let cell = daysCollectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath) as DayCollectionViewCell? {
+//            print("found it")
+//        } else {
+//            print("didn't find it")
+//        }
+        daysCollectionView.selectItem(at: indexPath, animated: false, scrollPosition: .centeredHorizontally)
         daysCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
     }
     
