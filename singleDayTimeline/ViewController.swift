@@ -14,6 +14,7 @@ class ViewController: UIViewController, UICollectionViewDataSource,UICollectionV
     @IBOutlet weak var button: UIButton!
     var dates = [Date?]()
     var startDate: Date?
+    var endDate: Date?
     private var selectedIndexPath: IndexPath?
     
     @IBOutlet weak var daysCollectionView: UICollectionView!
@@ -26,39 +27,37 @@ class ViewController: UIViewController, UICollectionViewDataSource,UICollectionV
         self.dates = allDates.sorted(by: {
             $0!.compare($1!) == .orderedAscending
         })
-        startDate = self.dates.first! ?? Date()
-        let secondDate = Calendar.current.date(byAdding: .day, value: 10, to: self.startDate!)
+        self.startDate = Calendar.current.startOfDay(for: dates.first as! Date)
         
-        self.dates = [self.startDate,secondDate]
-    
-        
+        self.endDate = dates.last!
+        self.dates = Array(dates.suffix(from: 8))
+        print(self.dates)
         daysCollectionView.delegate = self
         daysCollectionView.dataSource = self
     }
+
     var onceOnly = false
     internal func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if !onceOnly {
             //let lastDateIndexPath = IndexPath(row: dates.count - 1,section: 0)
             let lastDate = dates.last
-            
             let lastDayIndex = lastDate!?.interval(ofComponent: .day, fromDate: startDate!)
             let lastDayCellIndexPath = IndexPath(row: lastDayIndex!, section: 0)
             self.daysCollectionView.scrollToItem(at: lastDayCellIndexPath, at: .left, animated: false)
             self.selectedIndexPath = lastDayCellIndexPath
-            //            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: singleDayCellReuseIdentifier, for: lastDayCellIndexPath) as! SingleDayCollectionViewCell
-            //            cell.arrowImage.isHidden = false
-            //self.timeline.reloadSections([0])
-            //            if let selectedRow = self.selectedIndexPath {
-            //                cell.reloadCell(selectedRow == indexPath)
-            //            } else {
-            //                cell.reloadCell(false)
-            //            }
+            //self.daysCollectionView.reloadData()
             onceOnly = true
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 150
+        let days = self.endDate!.days(from: self.startDate!)
+        if days <= 150 {
+            return 150
+        } else {
+            print(days,"days")
+            return days + 1
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -67,8 +66,7 @@ class ViewController: UIViewController, UICollectionViewDataSource,UICollectionV
         let cellDate = Calendar.current.date(byAdding: .day, value: indexPath.item, to: self.startDate!)
         
         if let selectedRow = selectedIndexPath {
-            print("SELECTED",selectedRow==selectedIndexPath)
-            cell.reloadCell(true)
+            cell.reloadCell(selectedRow==indexPath)
         } else {
             cell.reloadCell(false)
         }
@@ -87,6 +85,7 @@ class ViewController: UIViewController, UICollectionViewDataSource,UICollectionV
             print("same")
             cell.backgroundColor = UIColor.red
         }
+        //cell.backgroundColor = UIColor.blue
         return cell
     }
     
