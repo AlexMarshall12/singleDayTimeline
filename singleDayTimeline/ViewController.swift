@@ -30,13 +30,13 @@ class ViewController: UIViewController, UICollectionViewDataSource,UICollectionV
         self.startDate = Calendar.current.startOfDay(for: dates.first as! Date)
         
         self.endDate = dates.last!
-        self.dates = Array(dates.suffix(from: 8))
-        print(self.dates)
+        self.dates = Array(dates.prefix(upTo: 1))
         daysCollectionView.delegate = self
         daysCollectionView.dataSource = self
     }
 
     var onceOnly = false
+    
     internal func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if !onceOnly {
             //let lastDateIndexPath = IndexPath(row: dates.count - 1,section: 0)
@@ -45,7 +45,8 @@ class ViewController: UIViewController, UICollectionViewDataSource,UICollectionV
             let lastDayCellIndexPath = IndexPath(row: lastDayIndex!, section: 0)
             self.daysCollectionView.scrollToItem(at: lastDayCellIndexPath, at: .left, animated: false)
             self.selectedIndexPath = lastDayCellIndexPath
-            //self.daysCollectionView.reloadData()
+            self.daysCollectionView.reloadItems(at: [lastDayCellIndexPath])
+
             onceOnly = true
         }
     }
